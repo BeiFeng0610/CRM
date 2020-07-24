@@ -1,0 +1,257 @@
+package com.beifeng.crm.workbench.web.controller;
+
+import com.beifeng.crm.exception.CRUDException;
+import com.beifeng.crm.settings.domain.User;
+import com.beifeng.crm.settings.service.UserService;
+import com.beifeng.crm.settings.service.impl.UserServiceImpl;
+import com.beifeng.crm.utils.*;
+import com.beifeng.crm.vo.PaginationVO;
+import com.beifeng.crm.workbench.domain.Activity;
+import com.beifeng.crm.workbench.service.ActivityService;
+import com.beifeng.crm.workbench.service.impl.ActivityServiceImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ActivityController extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("进入到用户控制器");
+
+        String path = request.getServletPath();
+
+        if ("/workbench/activity/getUserList.do".equals(path)){
+
+            getUserList(request,response);
+
+        }else if ("/workbench/activity/save.do".equals(path)){
+
+            save(request,response);
+
+        }else if ("/workbench/activity/pageList.do".equals(path)){
+
+            pageList(request,response);
+
+        }else if ("/workbench/activity/delete.do".equals(path)){
+
+            delete(request,response);
+
+        }else if ("/workbench/activity/getUserListAndActivity.do".equals(path)){
+
+            getUserListAndActivity(request,response);
+
+        }else if ("/workbench/activity/update.do".equals(path)){
+
+            update(request,response);
+
+        }else if ("/workbench/activity/detail.do".equals(path)){
+
+            detail(request,response);
+
+        }
+
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("进入到跳转到详细信息页的操作");
+        String id = request.getParameter("id");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        Activity a = as.detail(id);
+
+        request.setAttribute("a",a);
+        request.getRequestDispatcher("/workbench/activity/detail.jsp").forward(request,response);
+
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行市场活动修改操作");
+
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String cost = request.getParameter("cost");
+        String description = request.getParameter("description");
+        // 修改时间：当前系统时间
+        String editTime = DateTimeUtil.getSysTime();
+        // 修改人：当前登录用户
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Activity a = new Activity();
+        a.setId(id);
+        a.setOwner(owner);
+        a.setName(name);
+        a.setStartDate(startDate);
+        a.setEndDate(endDate);
+        a.setCost(cost);
+        a.setDescription(description);
+        a.setEditTime(editTime);
+        a.setEditBy(editBy);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        try {
+
+            boolean flag = as.update(a);
+            PrintJson.printJsonFlag(response,flag);
+
+        } catch (CRUDException e) {
+            e.printStackTrace();
+
+            Map<String,Object> map = new HashMap<>();
+            String msg = e.getMessage();
+            map.put("success",false);
+            map.put("msg",msg);
+            PrintJson.printJsonObj(response,map);
+
+        }
+
+    }
+
+    private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("进入到查询用户信息列表和根据市场活动id查询单条记录的操作");
+
+        String id = request.getParameter("id");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        /*
+
+            返回值主要看，前端要什么，我们就要从service要什么
+
+         */
+        Map<String,Object> map = as.getUserListAndActivity(id);
+
+        PrintJson.printJsonObj(response,map);
+
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行市场活动的删除操作");
+
+        String ids[] = request.getParameterValues("id");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        boolean flag = as.delete(ids);
+
+        PrintJson.printJsonFlag(response,flag);
+
+    }
+
+    private void pageList(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("进入到查询市场活动信息列表的操作（结合条件查询和分页查询）");
+
+        String name = request.getParameter("name");
+        String owner = request.getParameter("owner");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+
+        String pageNoStr = request.getParameter("pageNo");
+        int pageNo = Integer.valueOf(pageNoStr);
+        // 每页展现的记录数
+        String pageSizeStr = request.getParameter("pageSize");
+        int pageSize = Integer.valueOf(pageSizeStr);
+        // 计算出略过的记录数
+        int skipCount = (pageNo-1)*pageSize;
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("name",name);
+        map.put("owner",owner);
+        map.put("startDate",startDate);
+        map.put("endDate",endDate);
+        map.put("skipCount",skipCount);
+        map.put("pageSize",pageSize);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        /*
+
+            使用vo
+                PaginationVO<T>
+                    private int total;
+                    private List<T> dataList;
+
+         */
+
+        PaginationVO<Activity> pv = as.pageList(map);
+
+        PrintJson.printJsonObj(response,pv);
+
+    }
+
+    private void save(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行市场活动添加操作");
+        String id = UUIDUtil.getUUID();
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String cost = request.getParameter("cost");
+        String description = request.getParameter("description");
+        // 创建时间：当前系统时间
+        String createTime = DateTimeUtil.getSysTime();
+        // 创建人：当前登录用户
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Activity a = new Activity();
+        a.setId(id);
+        a.setOwner(owner);
+        a.setName(name);
+        a.setStartDate(startDate);
+        a.setEndDate(endDate);
+        a.setCost(cost);
+        a.setDescription(description);
+        a.setCreateTime(createTime);
+        a.setCreateBy(createBy);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        try {
+
+            boolean flag = as.save(a);
+            PrintJson.printJsonFlag(response,flag);
+
+        } catch (CRUDException e) {
+            e.printStackTrace();
+
+            Map<String,Object> map = new HashMap<>();
+            String msg = e.getMessage();
+            map.put("success",false);
+            map.put("msg",msg);
+            PrintJson.printJsonObj(response,map);
+
+        }
+
+    }
+
+    private void getUserList(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("取得用户信息列表");
+
+        UserService us = (UserService) ServiceFactory.getService(new UserServiceImpl());
+
+        List<User> userList = us.getUserList();
+
+        PrintJson.printJsonObj(response,userList);
+
+    }
+
+}

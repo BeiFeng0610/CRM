@@ -7,6 +7,7 @@ import com.beifeng.crm.settings.service.impl.UserServiceImpl;
 import com.beifeng.crm.utils.*;
 import com.beifeng.crm.vo.PaginationVO;
 import com.beifeng.crm.workbench.domain.Activity;
+import com.beifeng.crm.workbench.domain.ActivityRemark;
 import com.beifeng.crm.workbench.service.ActivityService;
 import com.beifeng.crm.workbench.service.impl.ActivityServiceImpl;
 
@@ -56,7 +57,24 @@ public class ActivityController extends HttpServlet {
 
             detail(request,response);
 
+        }else if ("/workbench/activity/getRemarkListByAid.do".equals(path)){
+
+            getRemarkListByAid(request,response);
+
         }
+
+    }
+
+    private void getRemarkListByAid(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据市场活动id，取得备注信息列表");
+        String activityId = request.getParameter("activityId");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        List<ActivityRemark> arList = as.getRemarkListByAid(activityId);
+
+        PrintJson.printJsonObj(response,arList);
 
     }
 

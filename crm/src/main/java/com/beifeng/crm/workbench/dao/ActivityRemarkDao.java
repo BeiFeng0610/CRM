@@ -1,5 +1,9 @@
 package com.beifeng.crm.workbench.dao;
 
+import com.beifeng.crm.workbench.domain.ActivityRemark;
+
+import java.util.List;
+
 public interface ActivityRemarkDao {
 
 
@@ -7,4 +11,5 @@ public interface ActivityRemarkDao {
 
     int deleteByAids(String[] ids);
 
+    List<ActivityRemark> getRemarkListByAid(String activityId);
 }

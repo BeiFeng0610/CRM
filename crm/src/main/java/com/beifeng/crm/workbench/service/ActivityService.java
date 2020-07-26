@@ -3,7 +3,9 @@ package com.beifeng.crm.workbench.service;
 import com.beifeng.crm.exception.CRUDException;
 import com.beifeng.crm.vo.PaginationVO;
 import com.beifeng.crm.workbench.domain.Activity;
+import com.beifeng.crm.workbench.domain.ActivityRemark;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ActivityService {
@@ -19,4 +21,6 @@ public interface ActivityService {
     boolean update(Activity a) throws CRUDException;
 
     Activity detail(String id);
+
+    List<ActivityRemark> getRemarkListByAid(String activityId);
 }

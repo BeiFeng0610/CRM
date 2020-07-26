@@ -56,7 +56,26 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				showRemarkList();
 
 			});
-			
+
+			// 为保存按钮绑定事件 添加备注
+			$("#saveRemarkBtn").click(function () {
+
+				$.ajax({
+					url : "",
+					data : {
+
+					},
+					type : "",
+					dataType : "",
+					success : function (data) {
+
+					}
+				})
+
+			})
+
+
+			// 获取备注信息
 			function showRemarkList() {
 
 				$.ajax({
@@ -76,15 +95,20 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 						$.each(data,function (i,n) {
 
-							html += '<div class="remarkDiv" style="height: 60px;">';
+							/*
+								javascript:void(0);
+									将超链接禁用，只能以触发事件的形式来操作
+							 */
+
+							html += '<div id="'+n.id+'" class="remarkDiv" style="height: 60px;">';
 							html += '<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 							html += '<div style="position: relative; top: -40px; left: 40px;" >';
 							html += '<h5>'+n.noteContent+'</h5>';
 							html += '<font color="gray">市场活动</font> <font color="gray">-</font> <b>${a.name}</b> <small style="color: gray;"> '+ (n.editFlag==0?n.createTime:n.editTime) +' 由'+ (n.editFlag==0?n.createBy:n.editBy) +'</small>';
 							html += '<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
-							html += '<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>';
+							html += '<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #00BFFF;"></span></a>';
 							html += '&nbsp;&nbsp;&nbsp;&nbsp;';
-							html += '<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>';
+							html += '<a class="myHref" href="javascript:void(0);" onclick="deleteRemark(\''+n.id+'\')"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #FF0000;"></span></a>';
 							html += '</div>';
 							html += '</div>';
 							html += '</div>';
@@ -93,6 +117,48 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 						$("#remarkDiv").before(html);
 
+						$("#remarkBody").on("mouseover",".remarkDiv",function(){
+							$(this).children("div").children("div").show();
+						})
+						$("#remarkBody").on("mouseout",".remarkDiv",function(){
+							$(this).children("div").children("div").hide();
+						})
+
+
+					}
+				})
+
+			}
+
+			// 删除备注
+			function deleteRemark(id) {
+
+				$.ajax({
+					url : "workbench/activity/deleteRemark.do",
+					data : {
+						"id":id
+					},
+					type : "post",
+					dataType : "json",
+					success : function (data) {
+
+						/*
+							data
+								{"success":true/false}
+						 */
+
+						if (data.success){
+
+							// 删除成功
+							// 这种做法不行，记录使用的是before方法
+							// showRemarkList();
+							$("#"+id).remove();
+
+						}else {
+
+							alert("删除备注失败");
+
+						}
 					}
 				})
 
@@ -260,7 +326,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		</div>
 
 		<!-- 备注 -->
-		<div style="position: relative; top: 30px; left: 40px;">
+		<div style="position: relative; top: 30px; left: 40px;" id="remarkBody">
 			<div class="page-header">
 				<h4>备注</h4>
 			</div>
@@ -298,7 +364,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 					<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 						<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-						<button type="button" class="btn btn-primary">保存</button>
+						<button type="button" class="btn btn-primary" id="saveRemarkBtn">保存</button>
 					</p>
 				</form>
 			</div>

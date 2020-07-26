@@ -61,8 +61,24 @@ public class ActivityController extends HttpServlet {
 
             getRemarkListByAid(request,response);
 
+        }else if ("/workbench/activity/deleteRemark.do".equals(path)){
+
+            deleteRemark(request,response);
+
         }
 
+    }
+
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除备注操作");
+        String id = request.getParameter("id");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        boolean flag = as.deleteRemark(id);
+
+        PrintJson.printJsonFlag(response,flag);
     }
 
     private void getRemarkListByAid(HttpServletRequest request, HttpServletResponse response) {

@@ -24,6 +24,9 @@
     <url-pattern>*.jsp</url-pattern>
   </filter-mapping>
 
+  <listener>
+    <listener-class>com.beifeng.crm.web.listener.SysInitListener</listener-class>
+  </listener>
 
   <!-- 用户控制器 -->
   <servlet>

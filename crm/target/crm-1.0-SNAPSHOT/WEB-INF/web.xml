@@ -24,6 +24,7 @@
     <url-pattern>*.jsp</url-pattern>
   </filter-mapping>
 
+
   <!-- 用户控制器 -->
   <servlet>
     <servlet-name>UserController</servlet-name>
@@ -54,7 +55,16 @@
     <url-pattern>/workbench/activity/saveRemark.do</url-pattern>
     <url-pattern>/workbench/activity/updateRemark.do</url-pattern>
   </servlet-mapping>
-  
+
+  <!-- 线索控制器 -->
+  <servlet>
+    <servlet-name>ClueController</servlet-name>
+    <servlet-class>com.beifeng.crm.workbench.web.controller.ClueController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ClueController</servlet-name>
+    <url-pattern>/workbench/activity/xxx.do</url-pattern>
+  </servlet-mapping>
   
   
 </web-app>

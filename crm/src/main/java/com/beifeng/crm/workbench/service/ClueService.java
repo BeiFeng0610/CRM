@@ -8,4 +8,6 @@ public interface ClueService {
     boolean save(Clue c) throws CRUDException;
 
     Clue detail(String id);
+
+    boolean unbund(String id);
 }

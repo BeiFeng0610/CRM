@@ -51,7 +51,25 @@ public class ClueController extends HttpServlet {
 
             getActivityListByClueId(request,response);
 
+        }else if ("/workbench/clue/unbund.do".equals(path)){
+
+            unbund(request,response);
+
         }
+
+    }
+
+    private void unbund(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据关联id解除关联的市场活动列表");
+
+        String id = request.getParameter("id");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.unbund(id);
+
+        PrintJson.printJsonFlag(response,flag);
 
     }
 

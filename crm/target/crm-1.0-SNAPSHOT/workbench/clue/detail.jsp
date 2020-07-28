@@ -94,9 +94,39 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 	}
 	
-	function unbund() {
+	function unbund(id) {
 
+		// alert(id);
+		$.ajax({
+			url : "workbench/clue/unbund.do",
+			data : {
 
+				"id" : id
+
+			},
+			type : "post",
+			dataType : "json",
+			success : function (data) {
+
+				/*
+					data
+						{"success":true/false}
+				 */
+
+				if (data.success){
+
+					// 解除关联成功之后
+					// 刷新关联的市场活动列表
+					showActivityList();
+
+				}else {
+
+					alert("解除关联失败")
+					showActivityList();
+
+				}
+			}
+		})
 
 	}
 	

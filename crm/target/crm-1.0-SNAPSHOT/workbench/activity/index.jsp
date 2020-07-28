@@ -253,6 +253,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				// 为修改按钮绑定事件，为了打开修改操作的模态窗口
 				$("#editBtn").click(function () {
 
+					$(".time").datetimepicker({
+						minView: "month",
+						language:  'zh-CN',
+						format: 'yyyy-mm-dd',
+						autoclose: true,
+						todayBtn: true,
+						pickerPosition: "bottom-left"
+					});
+
 					// 找到复选框中所有挑勾的复选框的jquery对象
 					var $xz = $("input[name=xz]:checked");
 

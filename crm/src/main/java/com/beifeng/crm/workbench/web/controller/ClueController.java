@@ -55,7 +55,47 @@ public class ClueController extends HttpServlet {
 
             unbund(request,response);
 
+        }else if ("/workbench/clue/getActivityListByNameAndNotByClueId.do".equals(path)){
+
+            getActivityListByNameAndNotByClueId(request,response);
+
+        }else if ("/workbench/clue/bund.do".equals(path)){
+
+            bund(request,response);
+
         }
+
+    }
+
+    private void bund(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行关联市场活动操作");
+
+        String cid = request.getParameter("cid");
+        String aids[] = request.getParameterValues("aid");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.bund(cid,aids);
+        PrintJson.printJsonFlag(response,flag);
+
+    }
+
+    private void getActivityListByNameAndNotByClueId(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("查询市场活动列表(根据名称模糊查，排除已经关联指定线索的列表)");
+        String aname = request.getParameter("aname");
+        String clueId = request.getParameter("clueId");
+
+        Map<String,String> map = new HashMap<>();
+        map.put("aname",aname);
+        map.put("clueId",clueId);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        List<Activity> aList = as.getActivityListByNameAndNotByClueId(map);
+
+        PrintJson.printJsonObj(response,aList);
 
     }
 

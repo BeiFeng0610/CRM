@@ -2,6 +2,7 @@ package com.beifeng.crm.workbench.service.impl;
 
 import com.beifeng.crm.exception.CRUDException;
 import com.beifeng.crm.utils.SqlSessionUtil;
+import com.beifeng.crm.utils.UUIDUtil;
 import com.beifeng.crm.workbench.dao.ClueActivityRelationDao;
 import com.beifeng.crm.workbench.dao.ClueDao;
 import com.beifeng.crm.workbench.domain.Clue;
@@ -55,6 +56,30 @@ public class ClueServiceImpl implements ClueService {
         if (count!=1){
 
             flag = false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean bund(String cid, String[] aids) {
+
+        boolean flag = true;
+
+        for (String aid : aids){
+
+            // 取得每一个aid和cid做关联
+            ClueActivityRelation car = new ClueActivityRelation();
+            car.setId(UUIDUtil.getUUID());
+            car.setClueId(cid);
+            car.setActivityId(aid);
+
+            int count = clueActivityRelationDao.bund(car);
+
+            if (count!=1){
+                flag = false;
+            }
 
         }
 

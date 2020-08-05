@@ -25,6 +25,7 @@
     String createTime = DateTimeUtil.getSysTime();
     String createBy = ((User)request.getSession().getAttribute("user")).getName();
 
+
     $(".time").datetimepicker({
         minView: "month",
         language:  'zh-CN',
@@ -35,6 +36,13 @@
     });
 
 
+    var html = "";
+
+    $.each(data,function (i,n) {
+
+    })
+
+
     if (data.success){
 
     }else {
@@ -43,12 +51,14 @@
 
     }
 
+
     // 为全选的复选框绑定事件，触发全选操作
     $("#qx").click(function () {
 
         $("input[name=xz]").prop("checked",this.checked);
 
     })
+
 
     // 动态全选
     // 因为动态生成的元素是不能以普通绑定事件的形式操作

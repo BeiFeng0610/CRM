@@ -71,7 +71,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 							html += '<tr>';
 							html += '<td><input type="radio" name="xz" value="'+n.id+'" /></td>';
-							html += '<td>'+n.name+'</td>';
+							html += '<td id="'+n.id+'">'+n.name+'</tdid>';
 							html += '<td>'+n.startDate+'</td>';
 							html += '<td>'+n.endDate+'</td>';
 							html += '<td>'+n.owner+'</td>';
@@ -85,6 +85,58 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				})
 
 				return false;
+			}
+
+		})
+
+		// 为提交（市场活动）按钮绑定事件，填充市场活动源（填写名字和id）
+		$("#submitActivityBtn").click(function () {
+
+			// 取得选中市场活动的的id
+			var $xz = $("input[name=xz]:checked");
+			var id = $xz.val();
+
+			// 取得选中市场活动的名字
+			var name = $("#"+id).html();
+
+
+			// 讲以上两项信息填写到 交易到表单的市场活动源中
+			$("#activityId").val(id);
+			$("#activityName").val(name);
+
+			// 关闭模态窗口
+			$("#searchActivityModal").modal("hide");
+
+		})
+
+		// 为转换按钮绑定事件，执行线索的转换操作
+		$("#convertBtn").click(function () {
+
+			/*
+
+				提交请求到后台，执行线索转换的操作，应该发出传统请求
+				请求结束后，最终响应回线索列表页
+
+				根据为客户创建交易的复选框有没有挑√，来判断是否需要创建交易
+
+			 */
+
+			if ($("#isCreateTransaction").prop("checked")){
+
+				// alert("需要创建交易")
+				// 需要创建交易，要为后台出阿迪交易表单中的信息还有clueId
+				// window.location.href = "workbench/clue/convert.do?clueId=${param.id}&money=xxx&expectedDate=xxx&name=xxx&stage=xxx&activityId=xxx";
+				// 以上传递参数的方式很麻烦
+
+				// 使用提交表单的形式来发出本次请求
+				$("#tranForm").submit();
+
+			}else {
+
+				// alert("不需要创建交易")
+				// 不需要创建交易的时候，传一个clueId就可以了
+				window.location.href = "workbench/clue/convert.do?clueId=${param.id}";
+
 			}
 
 		})
@@ -143,6 +195,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						</tbody>
 					</table>
 				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" id="submitActivityBtn">提交</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -162,22 +218,27 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	</div>
 	<div id="create-transaction2" style="position: relative; left: 40px; top: 20px; width: 80%; background-color: #F7F7F7; display: none;" >
 	
-		<form>
+		<form id="tranForm" action="workbench/clue/convert.do" method="post">
+
+			<input type="hidden" name="flag" value="a">
+
+			<input type="hidden" name="clueId" value="${param.id}">
+
 		  <div class="form-group" style="width: 400px; position: relative; left: 20px;">
 		    <label for="amountOfMoney">金额</label>
-		    <input type="text" class="form-control" id="amountOfMoney">
+		    <input type="text" class="form-control" id="amountOfMoney" name="money">
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="tradeName">交易名称</label>
-		    <input type="text" class="form-control" id="tradeName" value="动力节点-">
+		    <input type="text" class="form-control" id="tradeName" value="动力节点-" name="name">
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="expectedClosingDate">预计成交日期</label>
-		    <input type="text" class="form-control time" id="expectedClosingDate">
+		    <input type="text" class="form-control time" id="expectedClosingDate" name="expectedDate">
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="stage">阶段</label>
-		    <select id="stage"  class="form-control">
+		    <select id="stage"  class="form-control" name="stage">
 		    	<option></option>
 				<c:forEach items="${stageList}" var="s">
 					<option value="${s.value}">${s.text}</option>
@@ -186,7 +247,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="activity">市场活动源&nbsp;&nbsp;<a href="javascript:void(0);" id="openSearchModalBtn" style="text-decoration: none;"><span class="glyphicon glyphicon-search"></span></a></label>
-		    <input type="text" class="form-control" id="activity" placeholder="点击上面搜索" readonly>
+		    <input type="text" class="form-control" id="activityName" value="" placeholder="点击上面搜索" readonly>
+			  <input type="hidden" id="activityId" name="activityId" />
 		  </div>
 		</form>
 		
@@ -197,7 +259,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		<b>${param.owner}</b>
 	</div>
 	<div id="operation" style="position: relative; left: 40px; height: 35px; top: 100px;">
-		<input class="btn btn-primary" type="button" value="转换">
+		<input class="btn btn-primary" type="button" value="转换" id="convertBtn">
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<input class="btn btn-default" type="button" value="取消">
 	</div>

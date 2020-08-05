@@ -67,7 +67,28 @@ public class ClueController extends HttpServlet {
 
             getActivityLisByName(request,response);
 
+        }else if ("/workbench/clue/convert.do".equals(path)){
+
+            convert(request,response);
+
         }
+
+    }
+
+    private void convert(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行线索转换的操作");
+
+        String clueId = request.getParameter("clueId");
+
+        // 接收是否需要创建交易的标记
+        String flag = request.getParameter("flag");
+        if ("a".equals(flag)){
+
+
+
+        }
+
 
     }
 

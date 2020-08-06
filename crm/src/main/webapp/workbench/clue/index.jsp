@@ -543,7 +543,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<tbody>
 						<tr>
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/detail.do?id=6f6a7ca134e7480eae742de0729618b5';">马云先生</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/detail.do?id=68aa67cf86804f3f8a53b85fc6c5808c';">马云先生</a></td>
 							<td>动力节点</td>
 							<td>010-84846003</td>
 							<td>12345678901</td>

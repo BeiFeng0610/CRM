@@ -230,7 +230,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="tradeName">交易名称</label>
-		    <input type="text" class="form-control" id="tradeName" value="动力节点-" name="name">
+		    <input type="text" class="form-control" id="tradeName" value="" name="name">
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="expectedClosingDate">预计成交日期</label>

@@ -12,6 +12,7 @@ import com.beifeng.crm.vo.PaginationVO;
 import com.beifeng.crm.workbench.domain.Activity;
 import com.beifeng.crm.workbench.domain.ActivityRemark;
 import com.beifeng.crm.workbench.domain.Clue;
+import com.beifeng.crm.workbench.domain.Tran;
 import com.beifeng.crm.workbench.service.ActivityService;
 import com.beifeng.crm.workbench.service.ClueService;
 import com.beifeng.crm.workbench.service.impl.ActivityServiceImpl;
@@ -75,20 +76,50 @@ public class ClueController extends HttpServlet {
 
     }
 
-    private void convert(HttpServletRequest request, HttpServletResponse response) {
+    private void convert(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         System.out.println("执行线索转换的操作");
 
         String clueId = request.getParameter("clueId");
 
+        Tran t = null;
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
         // 接收是否需要创建交易的标记
         String flag = request.getParameter("flag");
         if ("a".equals(flag)){
 
+            t = new Tran();
+            // 接收表单中的参数
+            String money = request.getParameter("money");
+            String name = request.getParameter("name");
+            String expectedDate = request.getParameter("expectedDate");
+            String stage = request.getParameter("stage");
+            String activityId = request.getParameter("activityId");
+            String id = UUIDUtil.getUUID();
 
+            String createTime = DateTimeUtil.getSysTime();
+
+            t.setMoney(money);
+            t.setName(name);
+            t.setExpectedDate(expectedDate);
+            t.setStage(stage);
+            t.setActivityId(activityId);
+            t.setId(id);
+            t.setCreateTime(createTime);
+            t.setCreateBy(createBy);
 
         }
 
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag1 = cs.convert(clueId,t,createBy);
+
+        if (flag1){
+
+            response.sendRedirect(request.getContextPath()+"/workbench/clue/index.jsp");
+
+        }
 
     }
 

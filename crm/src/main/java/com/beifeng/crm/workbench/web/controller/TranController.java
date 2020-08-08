@@ -11,6 +11,7 @@ import com.beifeng.crm.utils.UUIDUtil;
 import com.beifeng.crm.workbench.domain.Activity;
 import com.beifeng.crm.workbench.domain.Clue;
 import com.beifeng.crm.workbench.domain.Tran;
+import com.beifeng.crm.workbench.domain.TranHistory;
 import com.beifeng.crm.workbench.service.ActivityService;
 import com.beifeng.crm.workbench.service.ClueService;
 import com.beifeng.crm.workbench.service.CustomerService;
@@ -20,6 +21,7 @@ import com.beifeng.crm.workbench.service.impl.ClueServiceImpl;
 import com.beifeng.crm.workbench.service.impl.CustomerServiceImp;
 import com.beifeng.crm.workbench.service.impl.TranServiceImp;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +52,64 @@ public class TranController extends HttpServlet {
 
             save(request,response);
 
+        }else if ("/workbench/transaction/detail.do".equals(path)){
+
+            detail(request,response);
+
+        }else if ("/workbench/transaction/getHistoryListByTranId.do".equals(path)){
+
+            getHistoryListByTranId(request,response);
+
         }
+
+    }
+
+    private void getHistoryListByTranId(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据交易id取得相应的历史列表");
+
+        String tranId = request.getParameter("tranId");
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImp());
+
+        List<TranHistory> thList = ts.getHistoryListByTranId(tranId);
+
+
+        Map<String, String> pMap = (Map<String, String>) request.getServletContext().getAttribute("pMap");
+        // 将交易历史列表遍历
+        for (TranHistory th : thList){
+
+            // 根据每一条历史取出每一个阶段
+            String stage = th.getStage();
+            String possibility = pMap.get(stage);
+            th.setPossibility(possibility);
+
+        }
+
+        PrintJson.printJsonObj(response,thList);
+
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("跳转到详细信息页");
+        String id = request.getParameter("id");
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImp());
+
+        Tran t = ts.detail(id);
+
+        // 处理可能性
+        String stage = t.getStage();
+        Map<String, String> pMap = (Map<String, String>) request.getServletContext().getAttribute("pMap");
+
+        String possibility = pMap.get(stage);
+        t.setPossibility(possibility);
+
+        request.setAttribute("t",t);
+
+
+        request.getRequestDispatcher("/workbench/transaction/detail.jsp").forward(request,response);
 
     }
 

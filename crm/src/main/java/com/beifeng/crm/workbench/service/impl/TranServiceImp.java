@@ -11,6 +11,8 @@ import com.beifeng.crm.workbench.domain.Tran;
 import com.beifeng.crm.workbench.domain.TranHistory;
 import com.beifeng.crm.workbench.service.TranService;
 
+import java.util.List;
+
 public class TranServiceImp implements TranService {
 
     private TranDao tranDao = SqlSessionUtil.getSqlSession().getMapper(TranDao.class);
@@ -42,6 +44,7 @@ public class TranServiceImp implements TranService {
             cus.setCreateTime(t.getCreateTime());
             cus.setContactSummary(t.getContactSummary());
             cus.setNextContactTime(t.getNextContactTime());
+            cus.setDescription(t.getDescription());
             cus.setOwner(t.getOwner());
             // 添加客服
             int count1 = customerDao.save(cus);
@@ -53,7 +56,7 @@ public class TranServiceImp implements TranService {
         }
 
         // 通过对于客户的处理，取出客户的id，可以新建交易了
-        t.setContactsId(cus.getId());
+        t.setCustomerId(cus.getId());
 
         int count2 = tranDao.save(t);
 
@@ -77,5 +80,21 @@ public class TranServiceImp implements TranService {
         }
 
         return flag;
+    }
+
+    @Override
+    public Tran detail(String id) {
+
+        Tran t = tranDao.detail(id);
+
+        return t;
+    }
+
+    @Override
+    public List<TranHistory> getHistoryListByTranId(String tranId) {
+
+        List<TranHistory> thList = tranHistoryDao.getHistoryListByTranId(tranId);
+
+        return thList;
     }
 }

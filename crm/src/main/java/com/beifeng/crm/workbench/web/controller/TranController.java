@@ -14,9 +14,11 @@ import com.beifeng.crm.workbench.domain.Tran;
 import com.beifeng.crm.workbench.service.ActivityService;
 import com.beifeng.crm.workbench.service.ClueService;
 import com.beifeng.crm.workbench.service.CustomerService;
+import com.beifeng.crm.workbench.service.TranService;
 import com.beifeng.crm.workbench.service.impl.ActivityServiceImpl;
 import com.beifeng.crm.workbench.service.impl.ClueServiceImpl;
 import com.beifeng.crm.workbench.service.impl.CustomerServiceImp;
+import com.beifeng.crm.workbench.service.impl.TranServiceImp;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -43,6 +45,66 @@ public class TranController extends HttpServlet {
         }else if ("/workbench/transaction/getCustomerName.do".equals(path)){
 
             getCustomerName(request,response);
+
+        }else if ("/workbench/transaction/save.do".equals(path)){
+
+            save(request,response);
+
+        }
+
+    }
+
+    private void save(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        System.out.println("执行添加交易的操作");
+
+        String id = UUIDUtil.getUUID();
+        String owner = request.getParameter("owner");
+        String money = request.getParameter("money");
+        String name = request.getParameter("name");
+        String expectedDate = request.getParameter("expectedDate");
+
+        // 暂时只有名称
+        String customerName = request.getParameter("customerName");
+
+        String stage = request.getParameter("stage");
+        String type = request.getParameter("type");
+        String source = request.getParameter("source");
+        String activityId = request.getParameter("activityId");
+        String contactsId = request.getParameter("contactsId");
+
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        String description = request.getParameter("description");
+        String contactSummary = request.getParameter("contactSummary");
+        String nextContactTime = request.getParameter("nextContactTime");
+
+        Tran t = new Tran();
+        t.setId(id);
+        t.setOwner(owner);
+        t.setMoney(money);
+        t.setName(name);
+        t.setExpectedDate(expectedDate);
+        t.setStage(stage);
+        t.setType(type);
+        t.setSource(source);
+        t.setActivityId(activityId);
+        t.setContactsId(contactsId);
+        t.setCreateTime(createTime);
+        t.setCreateBy(createBy);
+        t.setDescription(description);
+        t.setContactSummary(contactSummary);
+        t.setNextContactTime(nextContactTime);
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImp());
+
+        boolean flag = ts.save(t,customerName);
+
+        if (flag){
+
+            // 添加成功，跳转到列表页
+            response.sendRedirect(request.getContextPath() + "/workbench/transaction/index.jsp");
 
         }
 

@@ -4,7 +4,7 @@ import com.beifeng.crm.workbench.domain.TranHistory;
 
 import java.util.List;
 
-public interface TranHistoryDao {
+    public interface TranHistoryDao {
 
     int save(TranHistory th);
 

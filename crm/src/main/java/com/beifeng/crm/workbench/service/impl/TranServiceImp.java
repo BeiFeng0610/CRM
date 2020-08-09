@@ -12,6 +12,7 @@ import com.beifeng.crm.workbench.domain.TranHistory;
 import com.beifeng.crm.workbench.service.TranService;
 
 import java.util.List;
+import java.util.UUID;
 
 public class TranServiceImp implements TranService {
 
@@ -97,4 +98,64 @@ public class TranServiceImp implements TranService {
 
         return thList;
     }
+
+    @Override
+    public boolean changeStage(Tran t) {
+
+        boolean flag = true;
+
+        // 改变交易阶段
+        int count1 = tranDao.changeStage(t);
+
+        if (count1 !=1){
+            flag = false;
+        }
+
+        // 交易阶段改变后，生成一条交易历史
+        TranHistory th = new TranHistory();
+
+        th.setId(UUIDUtil.getUUID());
+        th.setCreateTime(DateTimeUtil.getSysTime());
+        th.setCreateBy(t.getCreateBy());
+        th.setMoney(t.getMoney());
+        th.setStage(t.getStage());
+        th.setTranId(t.getId());
+        th.setExpectedDate(t.getExpectedDate());
+
+        // 添加交易历史
+        int count2 = tranHistoryDao.save(th);
+        if (count2 !=1){
+            flag = false;
+        }
+
+        return flag;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

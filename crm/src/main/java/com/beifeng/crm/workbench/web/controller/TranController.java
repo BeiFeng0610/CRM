@@ -60,7 +60,48 @@ public class TranController extends HttpServlet {
 
             getHistoryListByTranId(request,response);
 
+        }else if ("/workbench/transaction/changeStage.do".equals(path)){
+
+            changeStage(request,response);
+
         }
+
+    }
+
+    private void changeStage(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行改变阶段的操作");
+        String id = request.getParameter("id");
+        String stage = request.getParameter("stage");
+        String money = request.getParameter("money");
+        String expectedDate = request.getParameter("expectedDate");
+
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Tran t = new Tran();
+        t.setId(id);
+        t.setStage(stage);
+        t.setMoney(money);
+        t.setExpectedDate(expectedDate);
+        t.setEditBy(editBy);
+        t.setEditTime(editTime);
+        t.setCreateBy(createBy);
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImp());
+
+        boolean flag = ts.changeStage(t);
+
+        Map<String, String> pMap = (Map<String, String>) request.getServletContext().getAttribute("pMap");
+        String possibility = pMap.get(stage);
+        t.setPossibility(possibility);
+
+        Map<String , Object> map = new HashMap<>();
+        map.put("success",flag);
+        map.put("t",t);
+
+        PrintJson.printJsonObj(response,map);
 
     }
 
